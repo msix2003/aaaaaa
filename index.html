@@ -423,7 +423,8 @@ const bancPreguntes = [{"tema": "T1", "descompte": 0.3, "text_es": "1. Las enfer
         }
 
         function actualitzarMarcador() {
-            const nota = Math.max(0, puntuacioTotal);
+            const notaBruta = Math.max(0, puntuacioTotal);
+            const nota = (notaBruta / NUM_PREGUNTES_EXAMEN) * 10;
             document.getElementById('nota-final').innerText = nota.toFixed(2);
         }
 
@@ -439,7 +440,8 @@ const bancPreguntes = [{"tema": "T1", "descompte": 0.3, "text_es": "1. Las enfer
             const missatge = document.getElementById('missatge-nota');
             const t = texts[idiomaActual];
 
-            notaGran.innerText = nota.toFixed(2) + ' / 10.00';
+            const notaFinal = (nota / NUM_PREGUNTES_EXAMEN) * 10;
+            notaGran.innerText = notaFinal.toFixed(2) + ' / 10.00';
 
             let idx = 3;
             if (nota >= 9) idx = 0;
