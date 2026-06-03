@@ -2,200 +2,388 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <title>Examen Patologia Forestal 2023</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Patologia Forestal - Generador Aleatori</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             color: #333;
             line-height: 1.6;
             padding: 20px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            min-height: 100vh;
         }
         h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #27ae60;
-            padding-bottom: 10px;
+            color: #1b5e20;
+            border-bottom: 3px solid #2e7d32;
+            padding-bottom: 15px;
             text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        .subtitol {
+            text-align: center;
+            color: #555;
+            font-size: 0.95em;
+            margin-bottom: 25px;
         }
         .info-examen {
             background-color: #e8f8f5;
             border-left: 5px solid #27ae60;
-            padding: 15px;
+            padding: 18px;
             margin-bottom: 30px;
-            border-radius: 4px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
+        .info-examen p { margin: 0; }
         .pregunta {
             background: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            border-left: 4px solid #81c784;
         }
+        .pregunta:hover { transform: translateY(-2px); }
         .titol-pregunta {
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.08em;
             margin-bottom: 15px;
             color: #2c3e50;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .num-pregunta {
+            background: #2e7d32;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        .tema-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-left: auto;
+            font-weight: normal;
         }
         .opciones {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
         .opcion {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            font-size: 0.98em;
+            position: relative;
+            padding-left: 45px;
         }
         .opcion:hover {
-            background-color: #e9ecef;
+            background-color: #e8f5e9;
+            border-color: #81c784;
+            transform: translateX(5px);
         }
-        /* Estats en clicar */
+        .opcion::before {
+            content: attr(data-letra);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85em;
+            color: #555;
+        }
+        .opcion:hover::before { background: #81c784; color: white; }
+
+        /* Estats respostes */
         .correcta {
-            background-color: #d4edda !important;
-            border-color: #c3e6cb !important;
-            color: #155724 !important;
+            background-color: #c8e6c9 !important;
+            border-color: #4caf50 !important;
+            color: #1b5e20 !important;
             font-weight: bold;
         }
+        .correcta::before { background: #4caf50 !important; color: white !important; }
         .incorrecta {
-            background-color: #f8d7da !important;
-            border-color: #f5c6cb !important;
-            color: #721c24 !important;
+            background-color: #ffcdd2 !important;
+            border-color: #f44336 !important;
+            color: #b71c1c !important;
         }
+        .incorrecta::before { background: #f44336 !important; color: white !important; }
         .desactivada {
             pointer-events: none;
+            opacity: 0.85;
         }
-        /* Marcador fix a baix */
+
+        /* Marcador flotant */
         #marcador-flotant {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2c3e50;
+            bottom: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
             color: white;
-            padding: 15px 25px;
-            border-radius: 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            font-size: 1.2em;
+            padding: 18px 28px;
+            border-radius: 50px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            font-size: 1.3em;
             font-weight: bold;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        #marcador-flotant:hover { transform: scale(1.05); }
+        .nota-num { font-size: 1.5em; }
+
+        /* Barra progrés */
+        #barra-progres {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 0%;
+            z-index: 1001;
+            transition: width 0.5s ease;
+        }
+
+        /* Botó reiniciar */
+        .boto-reiniciar {
+            display: block;
+            margin: 30px auto;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .boto-reiniciar:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+
+        /* Resum final */
+        #resum-final {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            text-align: center;
+            border-top: 5px solid #4caf50;
+        }
+        .nota-final-gran { font-size: 3em; color: #1b5e20; margin: 10px 0; }
+        .missatge-nota { font-size: 1.2em; color: #555; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.4em; }
+            .pregunta { padding: 15px; }
+            #marcador-flotant { font-size: 1em; padding: 12px 20px; right: 10px; bottom: 10px; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
+    <div id="barra-progres"></div>
 
-    <h1>Examen Patologia Forestal (24/4/2023)</h1>
-    
+    <h1>🌲 Examen Patologia Forestal</h1>
+    <div class="subtitol">Banc de 180 preguntes · 30 seleccionades aleatòriament</div>
+
     <div class="info-examen">
-        <p><strong>Instruccions:</strong> Respon les preguntes clicant sobre l'opció que consideris correcta. El sistema et mostrarà el resultat de manera immediata i calcularà la teva nota aplicant els corresponents descomptes per errada en temps real.</p>
+        <p><strong>Instruccions:</strong> Respon les 30 preguntes clicant sobre l'opció correcta. Cada encert suma 1.0 punt i cada error resta el descompte indicat. Les opcions es barregen en cada intent. Pots repetir l'examen tants cops com vulguis amb preguntes diferents!</p>
+    </div>
+
+    <div id="resum-final">
+        <div class="nota-final-gran" id="nota-gran">0.00</div>
+        <div class="missatge-nota" id="missatge-nota"></div>
     </div>
 
     <div id="contenidor-preguntes"></div>
 
-    <div id="marcador-flotant">Nota: <span id="nota-final">0.00</span> / 29.00</div>
+    <button class="boto-reiniciar" onclick="location.reload()">🔄 Generar Nou Examen Aleatori</button>
+
+    <div id="marcador-flotant">
+        <span>Nota:</span>
+        <span class="nota-num" id="nota-final">0.00</span>
+        <span>/ 10.00</span>
+    </div>
 
     <script>
-        // Base de dades de les preguntes basades en el document de text aportat.
-        // Nota: Al document falta la pregunta 5, hi ha 29 preguntes reals en total.
-        const preguntes = [
-            { id: 1, descompte: 0.3, text: "1. Las enfermedades forestales mayoritariamente producen:", opcions: ["A. Pérdidas de crecimiento", "B. Mortalidad"], correcta: 0 },
-            { id: 2, descompte: 0.3, text: "2. Algunos patógenos pueden entrar en el hospedante mediante penetración directa otros aprovechan oberturas naturales como las estomas:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
-            { id: 3, descompte: 0.3, text: "3. Incidencia es la proporción o porcentaje de entidades enfermas dentro de una unidad de muestreo", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
-            { id: 4, descompte: 0.3, text: "4. La especificidad de los patógenos tiene una señal filogenética. Esto implica que:", opcions: ["A. Dos especies de patógenos del mismo género se ayudarán a la hora de atacar un bosque", "B. Árboles del mismo género pero que habitan distintas zonas del mundo pueden ser atacados por el mismo patógeno", "C. Los daños causados por patógenos fúngicos son más parecidos a los causados por patógenos bacterianos"], correcta: 1 },
-            { id: 6, descompte: 0.3, text: "6. La zona de reacción y la zona de barrera sirven para:", opcions: ["A. Comparimentalizar el patógeno en el interior de árbol", "B. Evitar la defoliación", "C. Evitar la rotura de las raíces"], correcta: 0 },
-            { id: 7, descompte: 0.3, text: "7. La hipótesis de Janzen-Connell se basa en que los patógenos son especialistas (específicos de una especie de árbol).", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
-            { id: 8, descompte: 0.3, text: "8. La defoliación causada por otros factores bióticos (como los insectos), las heladas y el estrés hídrico son factores que favorecen la enfermedad:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
-            { id: 9, descompte: 0.3, text: "9. Los necrotrofos se ven favorecidos por condiciones de sequía, en cambio, los biotrofos no:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
-            { id: 10, descompte: 0.3, text: "10. Para tener éxito a la hora de introducir resistencia a un patógeno es importante que:", opcions: ["A. el huésped y el patógeno tengan una historia evolutiva común", "B. el huésped y el patógeno se vean favorecidos por condiciones climáticas similares", "C. el huésped y el patógeno sean de zonas lo más alejadas posible del planeta"], correcta: 0 },
-            { id: 11, descompte: 0.3, text: "11. Un corro de mortalidad causado por patógenos de raíz se diferencia de uno causado por sequía en que:", opcions: ["A. Los árboles mueren de golpe (en el causado por patógenos de raíz).", "B. Los árboles mueren la primavera siguiente (en el causado por sequía).", "C. Hay árboles en diferentes estadios de mortalidad (muertos recientes y muertos de hace mucho tiempo)."], correcta: 2 },
-            { id: 12, descompte: 0.2, text: "12. En Europa hay una especie de Heterobasidion que es exótica:", opcions: ["A. Heterobasidion abietinum", "B. Heterobasidion annosum", "C. Heterobasidion parviporum", "D. Heterobasidion irregulare"], correcta: 3 },
-            { id: 13, descompte: 0.3, text: "13. Una diferencia entre Armillaria y Heterobasidion es que Heterobasidion produce cuerpos de fructificación perennes y los de Armillaria mueren durante el invierno:", opcions: ["A. Falso", "B. Verdadero"], correcta: 1 },
-            { id: 14, descompte: 0.3, text: "14. Los individuos creados por Onnia son de un gran tamaño en comparación con los de Armillaria:", opcions: ["A. Verdadero", "B. Falso"], correcta: 1 },
-            { id: 15, descompte: 0.3, text: "15. Sirex noctilio y Amylostereum causan grandes pérdidas en plantaciones de coníferas exóticas en el hemisferio sur porqué:", opcions: ["A. No existen depredadores y parasitoides de Sirex.", "B. No existen competidores de Amylostereum.", "C. Las condiciones en el hemisferio sur son más favorables a la enfermedad."], correcta: 0 },
-            { id: 16, descompte: 0.3, text: "16. Pythium tienden a ser más especialistas que otros oomicetos como Phytophthora o Peronospora:", opcions: ["A. Verdadero", "B. Falso"], correcta: 1 },
-            { id: 17, descompte: 0.3, text: "17. Los síntomas que nos pueden indicar un ataque de Phytophthora son:", opcions: ["A. Pudrición de duramen", "B. Chancros en la base del tronco con exudaciones de color oscuro", "C. Presencia de oosporas, esporangios y/o zoosporas."], correcta: 1 },
-            { id: 18, descompte: 0.3, text: "18. Es importante para Phytophthora poder generar oosporas para:", opcions: ["A. poder infectar tejidos", "B. poder nadar y encontrar un nuevo huésped", "C. poder sobrevivir en épocas que no hay huésped o las condiciones son desfavorables", "D. poder volar a grandes distancias y poder encontrar un huésped compatible"], correcta: 2 },
-            { id: 19, descompte: 0.2, text: "19. Indica cuales de las siguientes Phytophthora sp. afecta al aliso:", opcions: ["A. Phytophthora x alni", "B. Phytophthora ramorum", "C. Phytophthora cinnamomi", "D. Phytophthora ilicis"], correcta: 0 },
-            { id: 20, descompte: 0.3, text: "20. La definición de P.D. Manion de decaimiento explica el proceso de mortalidad por una secuencia de factores que primero predisponen, luego incitan y finalmente contribuyen a la muerte del árbol:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
-            { id: 21, descompte: 0.3, text: "21. Indica que patógeno causante de enfermedades de chancro es nativo de Catalunya:", opcions: ["A. Diplodia corticola (corcho)", "B. Cryphonectria parasitica (castaño)", "C. Fusarium circinatum (pino)"], correcta: 0 },
-            { id: 22, descompte: 0.3, text: "22. ¿Cuál de los siguientes patógenos causa defoliación?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 1 },
-            { id: 23, descompte: 0.3, text: "23. ¿Cuál de los siguientes patógenos es una roya?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 2 },
-            { id: 24, descompte: 0.3, text: "24. ¿Cuál de los siguientes patógenos se ve favorecido por el granizo?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 0 },
-            { id: 25, descompte: 0.3, text: "25a. ¿Cuál de los siguientes patógenos afecta mucho más al regenerado que a los árboles adultos?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 1 },
-            { id: 252, descompte: 0.3, text: "25b. ¿Cuál de los siguientes patógenos tiene un estado latente y depende del estrés del hospedante para causar enfermedad?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 0 },
-            { id: 26, descompte: 0.3, text: "26. Dentro de un ciclo de una roya las únicas esporas haploides (n) son las basidiosporas. Todas las demás son diplodes (n+n):", opcions: ["A. Verdadero", "B. Falso"], correcta: 1 }, // Falso (las espermátidas/espermacios también son n)
-            { id: 27, descompte: 0.3, text: "27. Las royas tienen esporas que les sirven para alternar entre distintos huéspedes, pero solo algunas de ellas tienen esporas para causar re-infecciones dentro de un mismo huésped (royas autoicas):", opcions: ["A. Falso", "B. Verdadero"], correcta: 0 }, // Falso (la definición dada confunde macrocíclicas/autoicas)
-            { id: 28, descompte: 0.3, text: "28. Los patógenos vasculares de los géneros Ophiostoma o Ceratocystis se dispersan por:", opcions: ["A. Insectos", "B. Contactos entre raíces", "C. Insectos y contactos entre raíces"], correcta: 2 },
-            { id: 29, descompte: 0.3, text: "29. En los estadios iniciales, el marchitamiento causado por Ophiostoma novo-ulmi en los olmos afecta a:", opcions: ["A. Raíces", "B. De manera difusa a toda la copa", "C. Ramas dispersas dentro de la copa", "D. Los conidios del patógeno"], correcta: 2 },
-            { id: 30, descompte: 0.3, text: "30. La distribución de Viscum album en Catalunya en pinares está parcialmente asociada a las zonas de olivares porqué:", opcions: ["A. Se dan mejores condiciones para la supervivencia del patógeno al invierno.", "B. Se dan mejores condiciones para la alimentación del pájaro vector durante el invierno.", "C. Se dan mejores condiciones para que el muérdago alterne entre el pino y el olivo."], correcta: 1 }
-        ];
+const bancPreguntes = [{"id": 1, "tema": "T1", "descompte": 0.3, "text": "1. Las enfermedades forestales mayoritariamente producen:", "opcions": ["A. Pérdidas de crecimiento", "B. Mortalidad"], "correcta": 0}, {"id": 2, "tema": "T1", "descompte": 0.3, "text": "2. Algunos patógenos pueden entrar en el hospedante mediante penetración directa otros aprovechan oberturas naturales como las estomas:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 3, "tema": "T1", "descompte": 0.3, "text": "3. Incidencia es la proporción o porcentaje de entidades enfermas dentro de una unidad de muestreo:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 4, "tema": "T1", "descompte": 0.3, "text": "4. La especificidad de los patógenos tiene una señal filogenética. Esto implica que:", "opcions": ["A. Dos especies de patógenos del mismo género se ayudarán a la hora de atacar un bosque", "B. Árboles del mismo género pero que habitan distintas zonas del mundo pueden ser atacados por el mismo patógeno", "C. Los daños causados por patógenos fúngicos son más parecidos a los causados por patógenos bacterianos"], "correcta": 1}, {"id": 6, "tema": "T1", "descompte": 0.3, "text": "6. La zona de reacción y la zona de barrera sirven para:", "opcions": ["A. Comparimentalizar el patógeno en el interior de árbol", "B. Evitar la defoliación", "C. Evitar la rotura de las raíces"], "correcta": 0}, {"id": 7, "tema": "T1", "descompte": 0.3, "text": "7. La hipótesis de Janzen-Connell se basa en que los patógenos son especialistas (específicos de una especie de árbol).", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 8, "tema": "T2", "descompte": 0.3, "text": "8. La defoliación causada por otros factores bióticos (como los insectos), las heladas y el estrés hídrico son factores que favorecen la enfermedad:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 9, "tema": "T2", "descompte": 0.3, "text": "9. Los necrotrofos se ven favorecidos por condiciones de sequía, en cambio, los biotrofos no:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 10, "tema": "T1", "descompte": 0.3, "text": "10. Para tener éxito a la hora de introducir resistencia a un patógeno es importante que:", "opcions": ["A. el huésped y el patógeno tengan una historia evolutiva común", "B. el huésped y el patógeno se vean favorecidos por condiciones climáticas similares", "C. el huésped y el patógeno sean de zonas lo más alejadas posible del planeta"], "correcta": 0}, {"id": 11, "tema": "T3", "descompte": 0.3, "text": "11. Un corro de mortalidad causado por patógenos de raíz se diferencia de uno causado por sequía en que:", "opcions": ["A. Los árboles mueren de golpe (en el causado por patógenos de raíz).", "B. Los árboles mueren la primavera siguiente (en el causado por sequía).", "C. Hay árboles en diferentes estadios de mortalidad (muertos recientes y muertos de hace mucho tiempo)."], "correcta": 2}, {"id": 12, "tema": "T3", "descompte": 0.2, "text": "12. En Europa hay una especie de Heterobasidion que es exótica:", "opcions": ["A. Heterobasidion abietinum", "B. Heterobasidion annosum", "C. Heterobasidion parviporum", "D. Heterobasidion irregulare"], "correcta": 3}, {"id": 13, "tema": "T3", "descompte": 0.3, "text": "13. Una diferencia entre Armillaria y Heterobasidion es que Heterobasidion produce cuerpos de fructificación perennes y los de Armillaria mueren durante el invierno:", "opcions": ["A. Falso", "B. Verdadero"], "correcta": 1}, {"id": 14, "tema": "T3", "descompte": 0.3, "text": "14. Los individuos creados por Onnia son de un gran tamaño en comparación con los de Armillaria:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 15, "tema": "T3", "descompte": 0.3, "text": "15. Sirex noctilio y Amylostereum causan grandes pérdidas en plantaciones de coníferas exóticas en el hemisferio sur porqué:", "opcions": ["A. No existen depredadores y parasitoides de Sirex.", "B. No existen competidores de Amylostereum.", "C. Las condiciones en el hemisferio sur son más favorables a la enfermedad."], "correcta": 0}, {"id": 16, "tema": "T3", "descompte": 0.3, "text": "16. Pythium tienden a ser más especialistas que otros oomicetos como Phytophthora o Peronospora:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 17, "tema": "T3", "descompte": 0.3, "text": "17. Los síntomas que nos pueden indicar un ataque de Phytophthora son:", "opcions": ["A. Pudrición de duramen", "B. Chancros en la base del tronco con exudaciones de color oscuro", "C. Presencia de oosporas, esporangios y/o zoosporas."], "correcta": 1}, {"id": 18, "tema": "T3", "descompte": 0.3, "text": "18. Es importante para Phytophthora poder generar oosporas para:", "opcions": ["A. poder infectar tejidos", "B. poder nadar y encontrar un nuevo huésped", "C. poder sobrevivir en épocas que no hay huésped o las condiciones son desfavorables", "D. poder volar a grandes distancias y poder encontrar un huésped compatible"], "correcta": 2}, {"id": 19, "tema": "T3", "descompte": 0.2, "text": "19. Indica cuales de las siguientes Phytophthora sp. afecta al aliso:", "opcions": ["A. Phytophthora x alni", "B. Phytophthora ramorum", "C. Phytophthora cinnamomi", "D. Phytophthora ilicis"], "correcta": 0}, {"id": 20, "tema": "T4", "descompte": 0.3, "text": "20. La definición de P.D. Manion de decaimiento explica el proceso de mortalidad por una secuencia de factores que primero predisponen, luego incitan y finalmente contribuyen a la muerte del árbol:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 21, "tema": "T5", "descompte": 0.3, "text": "21. Indica que patógeno causante de enfermedades de chancro es nativo de Catalunya:", "opcions": ["A. Diplodia corticola (corcho)", "B. Cryphonectria parasitica (castaño)", "C. Fusarium circinatum (pino)"], "correcta": 0}, {"id": 22, "tema": "T6", "descompte": 0.3, "text": "22. ¿Cuál de los siguientes patógenos causa defoliación?:", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], "correcta": 1}, {"id": 23, "tema": "T7", "descompte": 0.3, "text": "23. ¿Cuál de los siguientes patógenos es una roya?:", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], "correcta": 2}, {"id": 24, "tema": "T6", "descompte": 0.3, "text": "24. ¿Cuál de los siguientes patógenos se ve favorecido por el granizo?:", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], "correcta": 0}, {"id": 25, "tema": "T6", "descompte": 0.3, "text": "25a. ¿Cuál de los siguientes patógenos afecta mucho más al regenerado que a los árboles adultos?:", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], "correcta": 1}, {"id": 252, "tema": "T6", "descompte": 0.3, "text": "25b. ¿Cuál de los siguientes patógenos tiene un estado latente y depende del estrés del hospedante para causar enfermedad?:", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], "correcta": 0}, {"id": 26, "tema": "T7", "descompte": 0.3, "text": "26. Dentro de un ciclo de una roya las únicas esporas haploides (n) son las basidiosporas. Todas las demás son diplodes (n+n):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 27, "tema": "T7", "descompte": 0.3, "text": "27. Las royas tienen esporas que les sirven para alternar entre distintos huéspedes, pero solo algunas de ellas tienen esporas para causar re-infecciones dentro de un mismo huésped (royas autoicas):", "opcions": ["A. Falso", "B. Verdadero"], "correcta": 0}, {"id": 28, "tema": "T7", "descompte": 0.3, "text": "28. Los patógenos vasculares de los géneros Ophiostoma o Ceratocystis se dispersan por:", "opcions": ["A. Insectos", "B. Contactos entre raíces", "C. Insectos y contactos entre raíces"], "correcta": 2}, {"id": 29, "tema": "T7", "descompte": 0.3, "text": "29. En los estadios iniciales, el marchitamiento causado por Ophiostoma novo-ulmi en los olmos afecta a:", "opcions": ["A. Raíces", "B. De manera difusa a toda la copa", "C. Ramas dispersas dentro de la copa", "D. Los conidios del patógeno"], "correcta": 2}, {"id": 30, "tema": "T7", "descompte": 0.3, "text": "30. La distribución de Viscum album en Catalunya en pinares está parcialmente asociada a las zonas de olivares porqué:", "opcions": ["A. Se dan mejores condiciones para la supervivencia del patógeno al invierno.", "B. Se dan mejores condiciones para la alimentación del pájaro vector durante el invierno.", "C. Se dan mejores condiciones para que el muérdago alterne entre el pino y el olivo."], "correcta": 1}, {"id": 101, "tema": "T1", "descompte": 0.2, "text": "101. El triangle de la malaltia està format per patogen, planta i:", "opcions": ["A. Fongs", "B. Ambient", "C. Insectes", "D. Sòl"], "correcta": 1}, {"id": 102, "tema": "T1", "descompte": 0.3, "text": "102. La severitat mesura la quantitat de malaltia que afecta les entitats dins una unitat de mostreig:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 103, "tema": "T1", "descompte": 0.3, "text": "103. La virulència és el grau de dany causat a l'hoste i correlaciona negativament amb el fitness de l'hoste:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 104, "tema": "T1", "descompte": 0.3, "text": "104. La patogenicitat és una propietat quantitativa:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 105, "tema": "T1", "descompte": 0.3, "text": "105. Els patògens exòtics/introduïts causen més danys perquè:", "opcions": ["A. Són més virulents per naturalesa", "B. Hi ha manca de co-evolució amb l'hoste", "C. Viuen més anys", "D. Es reprodueixen més ràpid"], "correcta": 1}, {"id": 106, "tema": "T1", "descompte": 0.3, "text": "106. Segons la hipòtesi de compensació (trade-off), els patògens tendeixen a evolucionar cap a menor virulència perquè la mort de l'hoste els perjudica:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 107, "tema": "T1", "descompte": 0.3, "text": "107. La zona de barrera es forma quan l'atac ve de fora (escorça) per tancar la ferida:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 108, "tema": "T1", "descompte": 0.3, "text": "108. La zona de reacció es crea quan l'atac ve de dins o de les arrels per aturar la colonització de l'albeca:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 109, "tema": "T1", "descompte": 0.3, "text": "109. La compartimentalització és una resposta induïda local de l'arbre:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 110, "tema": "T1", "descompte": 0.3, "text": "110. Els biotrofos consumeixen recursos de teixits vius de l'hoste:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 111, "tema": "T1", "descompte": 0.3, "text": "111. Els necrotrofos maten els teixits per alimentar-se d'ells:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 112, "tema": "T1", "descompte": 0.3, "text": "112. Els patògens de sòl incrementen la població quan hi ha més densitat d'hoste:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 113, "tema": "T1", "descompte": 0.3, "text": "113. El feedback negatiu planta-sòl estabilitza la comunitat vegetal:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 114, "tema": "T1", "descompte": 0.3, "text": "114. El feedback positiu planta-sòl augmenta la dominància d'una espècie:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 115, "tema": "T1", "descompte": 0.3, "text": "115. Els patògens especialitzats incrementen la diversitat vegetal segons el principi de Janzen-Connell:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 116, "tema": "T1", "descompte": 0.3, "text": "116. La latència és el període entre la infecció i l'aparició de símptomes:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 117, "tema": "T1", "descompte": 0.3, "text": "117. Els estomas són obertures naturals que alguns patògens poden aprofitar per entrar:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 118, "tema": "T1", "descompte": 0.3, "text": "118. La penetració directa del patògen requereix enzims que degradin la cutícula:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 119, "tema": "T1", "descompte": 0.2, "text": "119. Quines defenses són estructurals de l'arbre?", "opcions": ["A. Resines", "B. Pèls i escorça", "C. Fenols", "D. Tannins"], "correcta": 1}, {"id": 120, "tema": "T1", "descompte": 0.3, "text": "120. La resposta sistèmica adquirida (SAR) és una defensa que actua a distància (distal) de la infecció:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 121, "tema": "T1", "descompte": 0.3, "text": "121. La tolerància implica que l'arbre suporta el patogen sense morir:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 122, "tema": "T1", "descompte": 0.3, "text": "122. Els símptomes primaris apareixen lluny d'on es troba el patogen (ex situ):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 123, "tema": "T1", "descompte": 0.3, "text": "123. Els signes són l'evidència física del patogen (ex. esporas, miceli):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 124, "tema": "T1", "descompte": 0.3, "text": "124. La dispersió del patogen pot realitzar-se per vent, pluja, insectes, aigua, llavors i animals:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 125, "tema": "T1", "descompte": 0.3, "text": "125. Segons el model zig-zag de Jones i Dangl, la planta reconeix el patogen i el patogen modifica els efectors per escapar:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 201, "tema": "T2", "descompte": 0.3, "text": "201. L'estrès hídric incrementa les lesions causades per patògens:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 202, "tema": "T2", "descompte": 0.3, "text": "202. La floridura negra de la neu (Herpotrichia nigra) està associada a danys per fred:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 203, "tema": "T2", "descompte": 0.3, "text": "203. La humitat ambiental afavoreix la malaltia perquè permet la lliberació d'esporas i la germinació:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 204, "tema": "T2", "descompte": 0.3, "text": "204. Els boscos tancats tenen més humitat i per tant més risc de malaltia:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 205, "tema": "T2", "descompte": 0.3, "text": "205. La compactació del sòl afecta negativament la respiració de les arrels:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 206, "tema": "T2", "descompte": 0.3, "text": "206. L'aplicació de sal a les carreteres afecta l'absorció d'aigua i cations per part de l'arbre:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 207, "tema": "T2", "descompte": 0.3, "text": "207. La manca de carboni (C) als arbres accelera la mortalitat per sequera:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 208, "tema": "T2", "descompte": 0.3, "text": "208. Els arbres amb més reserves de carboni triguen més a morir en condicions de sequera:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 209, "tema": "T2", "descompte": 0.3, "text": "209. Els biotrofs (com les royas) disminueixen la seva capacitat de causar malaltia amb l'increment de sequeres:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 210, "tema": "T2", "descompte": 0.3, "text": "210. Els fongs vasculars (com Ophiostoma) incrementen la capacitat de causar malalties amb més sequeres:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 211, "tema": "T2", "descompte": 0.3, "text": "211. Diplodia sapinea ataca preferentment després de tempestes de calamarsa (granizo):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 212, "tema": "T2", "descompte": 0.3, "text": "212. La gestió forestal pot obrir entrades de patògens en soques i causar ferides:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 213, "tema": "T2", "descompte": 0.3, "text": "213. Antigament s'explotava el bosc a l'hivern per reduir la infecció per esporas:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 214, "tema": "T2", "descompte": 0.3, "text": "214. Les tallades alliberen matèria orgànica accessible als patògens de sòl:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 215, "tema": "T2", "descompte": 0.3, "text": "215. Introduir resistència genètica és més probable si el patogen és autòcton (nativo):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 216, "tema": "T2", "descompte": 0.3, "text": "216. El control biològic de Cryphonectria parasitica es basa en l'ús d'un hipovirus que provoca hipovirulència:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 217, "tema": "T2", "descompte": 0.2, "text": "217. Quin factor NO és un factor que predisposa al decaiment segons Manion?", "opcions": ["A. Clima", "B. Edat de l'arbrat", "C. Genètica", "D. Fungicides"], "correcta": 3}, {"id": 218, "tema": "T2", "descompte": 0.2, "text": "218. Quin factor INCITA el decaiment segons Manion?", "opcions": ["A. Clima", "B. Sequera", "C. Edat", "D. Genètica"], "correcta": 1}, {"id": 219, "tema": "T2", "descompte": 0.2, "text": "219. Quin factor CONTRIBUEIX al decaiment segons Manion?", "opcions": ["A. Clima", "B. Plagues i patògens oportunistes", "C. Edat", "D. Sòl"], "correcta": 1}, {"id": 220, "tema": "T2", "descompte": 0.3, "text": "220. La majoria de fungicides no estan autoritzats actualment per al control de malalties forestals:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 301, "tema": "T3", "descompte": 0.3, "text": "301. Heterobasidion annosum causa aproximadament 750 milions d'euros de pèrdues anuals a Europa:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 302, "tema": "T3", "descompte": 0.3, "text": "302. La pudrició blanca descompon cel·lulosa, hemicel·lulosa i lignina:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 303, "tema": "T3", "descompte": 0.3, "text": "303. La pudrició marró (brown rot) deixa la lignina sense descompondre, que s'oxida i presenta color blanquecino:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 304, "tema": "T3", "descompte": 0.3, "text": "304. Heterobasidion es reprodueix sexualment per basidiosporas (n) que després poden fertilitzar-se i formar individus (n+n) o (2n):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 305, "tema": "T3", "descompte": 0.3, "text": "305. Els individus (genets) de Heterobasidion poden cobrir grans extensions i viure molts anys:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 306, "tema": "T3", "descompte": 0.3, "text": "306. Heterobasidion annosum s.l. causa malalties diferenciades en pins i en avets/spruces:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 307, "tema": "T3", "descompte": 0.2, "text": "307. Quina espècie de Heterobasidion és invasora a Europa?", "opcions": ["A. H. abietinum", "B. H. annosum", "C. H. parviporum", "D. H. irregulare"], "correcta": 3}, {"id": 308, "tema": "T3", "descompte": 0.3, "text": "308. Els cossos de fructificació de Heterobasidion apareixen sempre a la part baixa de l'arbre (arrels i tocó):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 309, "tema": "T3", "descompte": 0.3, "text": "309. H. annosum és un colonitzador feble de ferides (aprox. 5,2% de les ferides):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 310, "tema": "T3", "descompte": 0.3, "text": "310. Els tocons de les clares són fàcilment infectats per Heterobasidion i transmeten el patogen a la següent generació:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 311, "tema": "T3", "descompte": 0.3, "text": "311. La transmissió d'Heterobasidion inclou esporas en ferides, tocons, i contacte arrel-a-arrel:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 312, "tema": "T3", "descompte": 0.2, "text": "312. Quin fong antagonista s'aplica sobre tocons per protegir contra Heterobasidion?", "opcions": ["A. Armillaria ostoyae", "B. Phlebiopsis gigantea", "C. Ganoderma applanatum", "D. Amylostereum areolatum"], "correcta": 1}, {"id": 313, "tema": "T3", "descompte": 0.2, "text": "313. Quin tractament de tocons incrementa el pH de la superfície?", "opcions": ["A. Rotstop", "B. Urea", "C. Fosfitos", "D. Coure"], "correcta": 1}, {"id": 314, "tema": "T3", "descompte": 0.3, "text": "314. Armillaria i Heterobasidion pertanyen al fílum Basidiomycota:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 315, "tema": "T3", "descompte": 0.3, "text": "315. Onnia tomentosa afecta coníferes i crea individus de mida petita per infecció inicial per basidiosporas:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 316, "tema": "T3", "descompte": 0.3, "text": "316. Phaeolus schweinitzii causa pudrició marró en coníferes:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 317, "tema": "T3", "descompte": 0.3, "text": "317. Ganoderma applanatum causa pudrició blanca en frondoses i és comú en boscos de faig:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 318, "tema": "T3", "descompte": 0.3, "text": "318. Sirex noctilio és nativa d'Eurasia i el nord d'Àfrica, però causa grans danys al hemisferi sud:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 319, "tema": "T3", "descompte": 0.3, "text": "319. Amylostereum es dispersa de forma asexual (clonal) mitjançant la avispa Sirex:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 320, "tema": "T3", "descompte": 0.2, "text": "320. Quin nematode s'utilitza com a biocontrol de Sirex noctilio?", "opcions": ["A. Deladenus siricidicola", "B. Steinernema feltiae", "C. Heterorhabditis bacteriophora", "D. Bursaphelenchus xylophilus"], "correcta": 0}, {"id": 321, "tema": "T3", "descompte": 0.3, "text": "321. Phytophthora cinnamomi és una de les espècies causants de la tinta del castanyer (Castanea sativa):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 322, "tema": "T3", "descompte": 0.3, "text": "322. Phytophthora x alni és un híbrid que no pot generar estructures de resistència al fred (oospores resistents):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 323, "tema": "T3", "descompte": 0.3, "text": "323. Phytophthora ramorum causa 'sudden oak death' i 'sudden larch death':", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 324, "tema": "T3", "descompte": 0.3, "text": "324. Pythium causa 'damping-off' en vivers i tendeix a ser més generalista que Phytophthora:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 325, "tema": "T3", "descompte": 0.2, "text": "325. Quin oomicet té més de 200 espècies i tendeix a ser més generalista?", "opcions": ["A. Phytophthora", "B. Peronospora", "C. Pythium", "D. Plasmopara"], "correcta": 2}, {"id": 401, "tema": "T4", "descompte": 0.3, "text": "401. El decaimiento segons Manion afecta majoritàriament arbres adults i és un procés lent i progressiu:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 402, "tema": "T4", "descompte": 0.3, "text": "402. Els factors que predisposen al decaiment són a llarg termini (clima, lloc, edat, genètica):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 403, "tema": "T4", "descompte": 0.3, "text": "403. Els factors que inciten al decaiment són esdeveniments puntuals com defoliació, sequera o helades:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 404, "tema": "T4", "descompte": 0.3, "text": "404. Els factors que contribueixen al decaiment són plagues i patògens oportunistes que requereixen estrès previ:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 405, "tema": "T4", "descompte": 0.3, "text": "405. El decaimement NO és el mateix que una etiologia desconeguda o mort ràpida:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 406, "tema": "T4", "descompte": 0.3, "text": "406. El decaimiento del abeto en los Pirineos está concentrado en árboles de la rotación anterior dejados en la clara:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 407, "tema": "T4", "descompte": 0.3, "text": "407. La gestión forestal incrementa localmente la abundancia de Armillaria, Heterobasidion y Melampsorella:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 408, "tema": "T4", "descompte": 0.3, "text": "408. Los árboles co-dominantes o dominados dejados en el aprovechamiento no recuperan el crecimiento y son más susceptibles a sequías:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 409, "tema": "T4", "descompte": 0.3, "text": "409. El decaimiento es una enfermedad, no un síntoma:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 410, "tema": "T4", "descompte": 0.3, "text": "410. Los modelos conceptuales de decaimiento son teorías que deben ser comprobados con datos de campo:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 411, "tema": "T4", "descompte": 0.3, "text": "411. El principio de parsimonia de Manion sugiere que el modelo de decaimiento es sencillo:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 1}, {"id": 412, "tema": "T4", "descompte": 0.2, "text": "412. Quin NO és un criteri per descartar que un fenomen sigui decaiment?", "opcions": ["A. Mort ràpida", "B. Afecta arbres adults i joves", "C. Etiologia desconeguda", "D. Presència d'un únic patogen"], "correcta": 3}, {"id": 413, "tema": "T4", "descompte": 0.2, "text": "413. Quin organisme s'ha vist incrementat per la gestió en abetales del Pirineu?", "opcions": ["A. Diplodia sapinea", "B. Melampsorella caryophyllacearum", "C. Hymenoscyphus fraxineus", "D. Dothistroma pini"], "correcta": 1}, {"id": 414, "tema": "T4", "descompte": 0.3, "text": "414. La historia del árbol (ataques previos) es importante para diagnosticar correctamente un decaimiento:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 415, "tema": "T4", "descompte": 0.3, "text": "415. El seguiment del decaiment forestal a Catalunya es realitza a través de l'Observatori Forestal Català:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 501, "tema": "T5", "descompte": 0.3, "text": "501. Un xancre és una malaltia infecciosa del floema i càmbium de tiges, branques o troncs:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 502, "tema": "T5", "descompte": 0.3, "text": "502. Els xancres bacterians es classifiquen dins les malalties bacterianes, no de xancre:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 503, "tema": "T5", "descompte": 0.3, "text": "503. La majoria de patògens de xancre pertanyen al fílum Ascomycota:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 504, "tema": "T5", "descompte": 0.3, "text": "504. Els xancres anuals duren menys d'un any i l'hoste els para mitjançant callositat:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 505, "tema": "T5", "descompte": 0.3, "text": "505. Els xancres perennes mostren anells concèntrics de callositat (target canker) perquè cada any l'hoste intenta curar-se i el patogen avança:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 506, "tema": "T5", "descompte": 0.3, "text": "506. Els xancres difusos s'estenen ràpidament perquè l'hoste no construeix barreres (peridermis) per aturar-los:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 507, "tema": "T5", "descompte": 0.3, "text": "507. Cryphonectria parasitica causa xancres difusos sense reacció de defensa de l'arbre:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 508, "tema": "T5", "descompte": 0.3, "text": "508. Cryphonectria parasitica és d'origen asiàtic i afecta tant el castanyer americà com l'europeu:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 509, "tema": "T5", "descompte": 0.3, "text": "509. El grup de compatibilitat EU-2 de Cryphonectria és dominant a Catalunya i afavoreix el biocontrol amb hipovirus:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 510, "tema": "T5", "descompte": 0.3, "text": "510. Fusarium circinatum causa el xancre resinós del pi i pot sobreviure com a endòfit en arrels de planter:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 511, "tema": "T5", "descompte": 0.3, "text": "511. Fusarium circinatum creix molt poc per sota dels 10°C i necessita humitat ambiental:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 512, "tema": "T5", "descompte": 0.2, "text": "512. Quin patogen causa 'Beech bark disease' en combinació amb la caparreta Cryptococcus fagisuga?", "opcions": ["A. Cryphonectria parasitica", "B. Neonectria ditissima", "C. Diplodia corticola", "D. Fusarium circinatum"], "correcta": 1}, {"id": 513, "tema": "T5", "descompte": 0.2, "text": "513. Quin patogen del xancre és natiu de Catalunya i afecta el suro (Quercus suber)?", "opcions": ["A. Cryphonectria parasitica", "B. Fusarium circinatum", "C. Diplodia corticola", "D. Neonectria cinnabarina"], "correcta": 2}, {"id": 514, "tema": "T5", "descompte": 0.3, "text": "514. Diplodia corticola infecta l'arbre després d'extreure el suro i actualment no hi ha fungicides autoritzats:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 515, "tema": "T5", "descompte": 0.3, "text": "515. Els xancres anuals estan associats a condicions de sequera:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 516, "tema": "T5", "descompte": 0.3, "text": "516. El contingut d'humitat del floema (al voltant del 20% o més) afecta la capacitat de produir peridermis i resistir el xancre:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 517, "tema": "T5", "descompte": 0.2, "text": "517. Quin patogen del xancre és exòtic i afecta pins?", "opcions": ["A. Diplodia corticola", "B. Cryphonectria parasitica", "C. Fusarium circinatum", "D. Nectria cinnabarina"], "correcta": 2}, {"id": 518, "tema": "T5", "descompte": 0.2, "text": "518. Quin patogen del xancre és exòtic i afecta castanyers?", "opcions": ["A. Diplodia corticola", "B. Cryphonectria parasitica", "C. Fusarium circinatum", "D. Neonectria ditissima"], "correcta": 1}, {"id": 519, "tema": "T5", "descompte": 0.3, "text": "519. Els xancres de pudrició són causats per basidiomicets que descomponen la fusta i maten parts de l'albeca:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 520, "tema": "T5", "descompte": 0.3, "text": "520. Les masses de conidis de Cryphonectria estan contingudes en una matriu enganxosa que facilita la dispersió:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 601, "tema": "T6", "descompte": 0.3, "text": "601. Les malalties de fulla depenen de les condicions meteorològiques (calor i humitat) per esporular, dispersar-se i infectar:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 602, "tema": "T6", "descompte": 0.3, "text": "602. Les coníferes valoren més les fulles que les frondoses perquè les tenen durant anys:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 603, "tema": "T6", "descompte": 0.3, "text": "603. Dothistroma pini afecta l'acícula de l'any anterior i causa la banda vermella:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 604, "tema": "T6", "descompte": 0.3, "text": "604. Dothistroma pot matar plantacions de menys de 15 anys, però en arbres majors només causa pèrdues de creixement:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 605, "tema": "T6", "descompte": 0.3, "text": "605. Dothistroma incrementa indirectament el risc d'incendis per l'acumulació de material sec:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 606, "tema": "T6", "descompte": 0.3, "text": "606. Diplodia sapinea viu com a endòfit latent i ataca després de tempestes de granizo:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 607, "tema": "T6", "descompte": 0.3, "text": "607. Diplodia sapinea afecta els brots tous i les acícules, causant danys al regenerat:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 608, "tema": "T6", "descompte": 0.2, "text": "608. Quin patogen de fulla creix en els estomes de l'abet de Douglas i impedeix l'intercanvi de gasos?", "opcions": ["A. Dothistroma pini", "B. Phaeocryptopus gaeumannii", "C. Lophodermium sylvestris", "D. Erysiphe alphitoides"], "correcta": 1}, {"id": 609, "tema": "T6", "descompte": 0.2, "text": "609. Quin patogen causa la banda vermella en acícules de Pinus radiata i altres pins?", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini", "D. Lophodermium"], "correcta": 1}, {"id": 610, "tema": "T6", "descompte": 0.2, "text": "610. Quin patogen de fulla afecta roures i produeix cleistotecis?", "opcions": ["A. Dothistroma", "B. Phaeocryptopus", "C. Erysiphe alphitoides", "D. Sirococcus"], "correcta": 2}, {"id": 611, "tema": "T6", "descompte": 0.3, "text": "611. Hymenoscyphus fraxineus causa el chancro del fresno i es va detectar per primera vegada a Polònia el 1992:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 612, "tema": "T6", "descompte": 0.3, "text": "612. Hymenoscyphus fraxineus infecta primer les fulles i després passa als ramillos causant dieback:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 613, "tema": "T6", "descompte": 0.3, "text": "613. Hymenoscyphus fraxineus ataca Fraxinus excelsior, angustifolia i ornus:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 614, "tema": "T6", "descompte": 0.3, "text": "614. Lophodermium sp. és un patogen de fulla que afecta Pinus sylvestris:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 615, "tema": "T6", "descompte": 0.3, "text": "615. Sirococcus conigeus causa el soflamado del pino carrasco (Pinus halepensis):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 616, "tema": "T6", "descompte": 0.2, "text": "616. Quin patogen de fulla és endòfit latent que s'activa amb estrès (granizo)?", "opcions": ["A. Dothistroma", "B. Diplodia sapinea", "C. Cronartium", "D. Phaeocryptopus"], "correcta": 1}, {"id": 617, "tema": "T6", "descompte": 0.2, "text": "617. Quin patogen afecta molt més el regenerat que els arbres adults en pins?", "opcions": ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini", "D. Erysiphe"], "correcta": 1}, {"id": 618, "tema": "T6", "descompte": 0.3, "text": "618. Les malalties de fulla majoritàriament les causen ascomicets, excepte les royas que són basidiomicets:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 619, "tema": "T6", "descompte": 0.3, "text": "619. La majoria de patògens de fulla no usen ferides per penetrar, sinó que ho fan directament a través de la cutícula o estomas:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 620, "tema": "T6", "descompte": 0.3, "text": "620. El canvi climàtic amb més pluja a l'estiu i hiverns més suaus afavoreix Dothistroma:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 701, "tema": "T7", "descompte": 0.3, "text": "701. Les royas són basidiomicets de l'ordre Pucciniales i són paràsits obligats de caràcter biotròf:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 702, "tema": "T7", "descompte": 0.3, "text": "702. Les royas autèciques (autoicas) usen un sol hoste per completar el seu cicle:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 703, "tema": "T7", "descompte": 0.3, "text": "703. Les royas heteroèciques (heteroicas) alternen entre dos hostes diferents:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 704, "tema": "T7", "descompte": 0.3, "text": "704. Les urediniosporas (de color taronja) serveixen per causar reinfeccions dins el mateix hoste:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 705, "tema": "T7", "descompte": 0.3, "text": "705. Les basidiosporas són haploides (n) i són les úniques que infecten el hoste primari:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 706, "tema": "T7", "descompte": 0.3, "text": "706. Les espermatidis (spermatia) també són haploides (n) i només serveixen per fertilitzar, no per infectar:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 707, "tema": "T7", "descompte": 0.3, "text": "707. Cronartium pini causa necrosis en les puntes de Pinus sylvestris i és una roya autoica:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 708, "tema": "T7", "descompte": 0.3, "text": "708. Melampsorella caryophyllacearum alterna entre l'avet (Abies alba) i Stellaria media (poll):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 709, "tema": "T7", "descompte": 0.3, "text": "709. La roya del rosal està causada per Phragmidium:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 710, "tema": "T7", "descompte": 0.3, "text": "710. Pine blister rust (Cronartium ribicola) va ser introduïda a Nord-amèrica el 1898 i afecta pins de 5 acícules:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 711, "tema": "T7", "descompte": 0.3, "text": "711. Fusiform rust és un patogen natiu però es va agreujar per la gestió (monocultius, plantació fora de rang):", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 712, "tema": "T7", "descompte": 0.3, "text": "712. Viscum album ssp. abietinum ataca Abies alba, ssp. austriacum ataca Pinus sp., i ssp. album ataca frondoses:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 713, "tema": "T7", "descompte": 0.3, "text": "713. Turdus viscivorus és el principal vector de dispersió de Viscum album:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 714, "tema": "T7", "descompte": 0.3, "text": "714. La distribució de Viscum album en pinars està associada a zones d'olivars perquè els ocells troben aliment a l'hivern:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 715, "tema": "T7", "descompte": 0.3, "text": "715. Ceratocystis fagacearum causa el marcidament del roure als EUA i es dispersa per insectes i contacte d'arrels:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 716, "tema": "T7", "descompte": 0.3, "text": "716. Ophiostoma novo-ulmi va desplaçar O. ulmi a Europa per ser més virulent i transmissible:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 717, "tema": "T7", "descompte": 0.3, "text": "717. Els marcidaments vasculars (Ophiostoma, Ceratocystis) es dispersen principalment per insectes vectors:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 718, "tema": "T7", "descompte": 0.3, "text": "718. La toxina produïda per Ceratocystis fagacearum estimula la tilosis (formació de tifoses) als vasos:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 719, "tema": "T7", "descompte": 0.3, "text": "719. Després de 30 anys de selecció s'han aconseguit clones d'olms resistents a la grafiosi:", "opcions": ["A. Verdadero", "B. Falso"], "correcta": 0}, {"id": 720, "tema": "T7", "descompte": 0.2, "text": "720. Quin hoste alternatiu de Melampsorella caryophyllacearum és una herba?", "opcions": ["A. Ribes", "B. Berberis", "C. Stellaria media", "D. Rosal"], "correcta": 2}, {"id": 721, "tema": "T7", "descompte": 0.2, "text": "721. Quin patogen causa 'pine blister rust' introduït als EUA?", "opcions": ["A. Cronartium pini", "B. Cronartium flaccidum", "C. Cronartium ribicola", "D. Melampsora"], "correcta": 2}, {"id": 722, "tema": "T7", "descompte": 0.2, "text": "722. Quin vector dispersa Viscum album als pins de Catalunya?", "opcions": ["A. Insectes perforadors", "B. Turdus viscivorus", "C. Escarabats", "D. Vents"], "correcta": 1}, {"id": 723, "tema": "T7", "descompte": 0.2, "text": "723. Quin patogen va desplaçar Ophiostoma ulmi a Europa?", "opcions": ["A. O. novo-ulmi", "B. Ceratocystis", "C. Fusarium", "D. Phytophthora"], "correcta": 0}, {"id": 724, "tema": "T7", "descompte": 0.2, "text": "724. Quin patogen de marcidament afecta el roure als EUA?", "opcions": ["A. Ophiostoma novo-ulmi", "B. Ceratocystis fagacearum", "C. Fusarium circinatum", "D. Phytophthora cinnamomi"], "correcta": 1}, {"id": 725, "tema": "T7", "descompte": 0.2, "text": "725. Quin patogen paràsit de plantes afecta Juniperus oxycedrus?", "opcions": ["A. Viscum album", "B. Arceuthobium oxycedri", "C. Melampsorella", "D. Cronartium"], "correcta": 1}];
 
+
+        const NUM_PREGUNTES_EXAMEN = 30;
         let puntuacioTotal = 0;
-        const respostesUsuari = {};
+        let respostesUsuari = {};
+        let preguntesSeleccionades = [];
+        let preguntesBarrejades = [];
 
-        function generarExamen() {
-            const contenidor = document.getElementById('contenidor-preguntes');
-            preguntes.forEach((p, indexPregunta) => {
-                const divPregunta = document.createElement('div');
-                divPregunta.className = 'pregunta';
-                
-                const titol = document.createElement('div');
-                titol.className = 'titol-pregunta';
-                titol.innerText = p.text;
-                divPregunta.appendChild(titol);
-                
-                const llistaOpcions = document.createElement('ul');
-                llistaOpcions.className = 'opciones';
-                
-                p.opcions.forEach((opcio, indexOpcio) => {
-                    const liOpcio = document.createElement('li');
-                    liOpcio.className = 'opcion';
-                    liOpcio.innerText = opcio;
-                    
-                    liOpcio.onclick = function() {
-                        marcarResposta(indexPregunta, indexOpcio, llistaOpcions, p);
-                    };
-                    
-                    llistaOpcions.appendChild(liOpcio);
-                });
-                
-                divPregunta.appendChild(llistaOpcions);
-                contenidor.appendChild(divPregunta);
+        function barrejarArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function seleccionarPreguntes() {
+            // Seleccionar 30 preguntes aleatòries del banc
+            const indices = barrejarArray(Array.from({length: bancPreguntes.length}, (_, i) => i));
+            const seleccionades = indices.slice(0, NUM_PREGUNTES_EXAMEN).map(i => ({...bancPreguntes[i]}));
+
+            // Barrejar les opcions de cada pregunta i actualitzar l'índex correcte
+            return seleccionades.map(p => {
+                const opcionsOriginals = [...p.opcions];
+                const correctaOriginal = p.correcta;
+                const textCorrecta = opcionsOriginals[correctaOriginal];
+
+                // Barrejar opcions
+                const opcionsBarrejades = barrejarArray(opcionsOriginals);
+                const nouIndexCorrecta = opcionsBarrejades.indexOf(textCorrecta);
+
+                return {
+                    ...p,
+                    opcions: opcionsBarrejades,
+                    correcta: nouIndexCorrecta
+                };
             });
         }
 
+        function generarExamen() {
+            puntuacioTotal = 0;
+            respostesUsuari = {};
+            preguntesBarrejades = seleccionarPreguntes();
+
+            const contenidor = document.getElementById('contenidor-preguntes');
+            contenidor.innerHTML = '';
+
+            preguntesBarrejades.forEach((p, index) => {
+                const divPregunta = document.createElement('div');
+                divPregunta.className = 'pregunta';
+                divPregunta.id = 'pregunta-' + index;
+
+                const titol = document.createElement('div');
+                titol.className = 'titol-pregunta';
+                titol.innerHTML = '<span class="num-pregunta">' + (index + 1) + '</span>' + 
+                                  '<span>' + p.text + '</span>' +
+                                  '<span class="tema-tag">' + p.tema + '</span>';
+                divPregunta.appendChild(titol);
+
+                const llistaOpcions = document.createElement('ul');
+                llistaOpcions.className = 'opciones';
+
+                const lletres = ['A', 'B', 'C', 'D', 'E'];
+
+                p.opcions.forEach((opcio, indexOpcio) => {
+                    const liOpcio = document.createElement('li');
+                    liOpcio.className = 'opcion';
+                    liOpcio.setAttribute('data-letra', lletres[indexOpcio]);
+                    liOpcio.innerText = opcio;
+
+                    liOpcio.onclick = function() {
+                        marcarResposta(index, indexOpcio, llistaOpcions, p);
+                    };
+
+                    llistaOpcions.appendChild(liOpcio);
+                });
+
+                divPregunta.appendChild(llistaOpcions);
+                contenidor.appendChild(divPregunta);
+            });
+
+            actualitzarMarcador();
+        }
+
         function marcarResposta(indexPregunta, indexOpcio, llistaOpcions, preguntaObj) {
-            // Si la pregunta ja s'ha respost, no fer res
             if (respostesUsuari[indexPregunta] !== undefined) return;
-            
+
             respostesUsuari[indexPregunta] = indexOpcio;
             const elementsOpcions = llistaOpcions.getElementsByClassName('opcion');
-            
-            // Desactivar interacció posterior en aquesta pregunta
+
             for (let i = 0; i < elementsOpcions.length; i++) {
                 elementsOpcions[i].classList.add('desactivada');
                 if (i === preguntaObj.correcta) {
-                    elementsOpcions[i].classList.add('correcta'); // Mostra la correcta sempre
+                    elementsOpcions[i].classList.add('correcta');
                 }
             }
-            
-            // Si s'ha fallat, es marca en vermell la de l'usuari
+
             if (indexOpcio !== preguntaObj.correcta) {
                 elementsOpcions[indexOpcio].classList.add('incorrecta');
                 puntuacioTotal -= preguntaObj.descompte;
             } else {
                 puntuacioTotal += 1.0;
             }
-            
-            // Actualitzar el marcador flotant en pantalla
-            document.getElementById('nota-final').innerText = Math.max(0, puntuacioTotal).toFixed(2);
+
+            actualitzarMarcador();
+            actualitzarBarraProgres();
+
+            // Comprovar si s'han respost totes
+            if (Object.keys(respostesUsuari).length === NUM_PREGUNTES_EXAMEN) {
+                mostrarResumFinal();
+            }
         }
 
-        // Inicialitza el test en carregar la pàgina
+        function actualitzarMarcador() {
+            const nota = Math.max(0, puntuacioTotal);
+            document.getElementById('nota-final').innerText = nota.toFixed(2);
+        }
+
+        function actualitzarBarraProgres() {
+            const percentatge = (Object.keys(respostesUsuari).length / NUM_PREGUNTES_EXAMEN) * 100;
+            document.getElementById('barra-progres').style.width = percentatge + '%';
+        }
+
+        function mostrarResumFinal() {
+            const nota = Math.max(0, puntuacioTotal);
+            const resum = document.getElementById('resum-final');
+            const notaGran = document.getElementById('nota-gran');
+            const missatge = document.getElementById('missatge-nota');
+
+            notaGran.innerText = nota.toFixed(2) + ' / 10.00';
+
+            let text = '';
+            if (nota >= 9) text = '🎉 Excel·lent! Domines la patologia forestal!';
+            else if (nota >= 7) text = '👍 Molt bé! Tens bons coneixements.';
+            else if (nota >= 5) text = '✅ Aprovat! Però encara pots millorar.';
+            else text = '📚 Cal repassar més... Torna-ho a intentar!';
+
+            missatge.innerText = text;
+            resum.style.display = 'block';
+
+            // Scroll suau al resum
+            resum.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
         window.onload = generarExamen;
     </script>
 </body>
