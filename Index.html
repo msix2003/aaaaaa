@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <title>Examen Patologia Forestal 2023</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        .info-examen {
+            background-color: #e8f8f5;
+            border-left: 5px solid #27ae60;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .pregunta {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .titol-pregunta {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .opciones {
+            list-style-type: none;
+            padding: 0;
+        }
+        .opcion {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .opcion:hover {
+            background-color: #e9ecef;
+        }
+        /* Estats en clicar */
+        .correcta {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724 !important;
+            font-weight: bold;
+        }
+        .incorrecta {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24 !important;
+        }
+        .desactivada {
+            pointer-events: none;
+        }
+        /* Marcador fix a baix */
+        #marcador-flotant {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 1.2em;
+            font-weight: bold;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Examen Patologia Forestal (24/4/2023)</h1>
+    
+    <div class="info-examen">
+        <p><strong>Instruccions:</strong> Respon les preguntes clicant sobre l'opció que consideris correcta. El sistema et mostrarà el resultat de manera immediata i calcularà la teva nota aplicant els corresponents descomptes per errada en temps real.</p>
+    </div>
+
+    <div id="contenidor-preguntes"></div>
+
+    <div id="marcador-flotant">Nota: <span id="nota-final">0.00</span> / 29.00</div>
+
+    <script>
+        // Base de dades de les preguntes basades en el document de text aportat.
+        // Nota: Al document falta la pregunta 5, hi ha 29 preguntes reals en total.
+        const preguntes = [
+            { id: 1, descompte: 0.3, text: "1. Las enfermedades forestales mayoritariamente producen:", opcions: ["A. Pérdidas de crecimiento", "B. Mortalidad"], correcta: 0 },
+            { id: 2, descompte: 0.3, text: "2. Algunos patógenos pueden entrar en el hospedante mediante penetración directa otros aprovechan oberturas naturales como las estomas:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
+            { id: 3, descompte: 0.3, text: "3. Incidencia es la proporción o porcentaje de entidades enfermas dentro de una unidad de muestreo", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
+            { id: 4, descompte: 0.3, text: "4. La especificidad de los patógenos tiene una señal filogenética. Esto implica que:", opcions: ["A. Dos especies de patógenos del mismo género se ayudarán a la hora de atacar un bosque", "B. Árboles del mismo género pero que habitan distintas zonas del mundo pueden ser atacados por el mismo patógeno", "C. Los daños causados por patógenos fúngicos son más parecidos a los causados por patógenos bacterianos"], correcta: 1 },
+            { id: 6, descompte: 0.3, text: "6. La zona de reacción y la zona de barrera sirven para:", opcions: ["A. Comparimentalizar el patógeno en el interior de árbol", "B. Evitar la defoliación", "C. Evitar la rotura de las raíces"], correcta: 0 },
+            { id: 7, descompte: 0.3, text: "7. La hipótesis de Janzen-Connell se basa en que los patógenos son especialistas (específicos de una especie de árbol).", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
+            { id: 8, descompte: 0.3, text: "8. La defoliación causada por otros factores bióticos (como los insectos), las heladas y el estrés hídrico son factores que favorecen la enfermedad:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
+            { id: 9, descompte: 0.3, text: "9. Los necrotrofos se ven favorecidos por condiciones de sequía, en cambio, los biotrofos no:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
+            { id: 10, descompte: 0.3, text: "10. Para tener éxito a la hora de introducir resistencia a un patógeno es importante que:", opcions: ["A. el huésped y el patógeno tengan una historia evolutiva común", "B. el huésped y el patógeno se vean favorecidos por condiciones climáticas similares", "C. el huésped y el patógeno sean de zonas lo más alejadas posible del planeta"], correcta: 0 },
+            { id: 11, descompte: 0.3, text: "11. Un corro de mortalidad causado por patógenos de raíz se diferencia de uno causado por sequía en que:", opcions: ["A. Los árboles mueren de golpe (en el causado por patógenos de raíz).", "B. Los árboles mueren la primavera siguiente (en el causado por sequía).", "C. Hay árboles en diferentes estadios de mortalidad (muertos recientes y muertos de hace mucho tiempo)."], correcta: 2 },
+            { id: 12, descompte: 0.2, text: "12. En Europa hay una especie de Heterobasidion que es exótica:", opcions: ["A. Heterobasidion abietinum", "B. Heterobasidion annosum", "C. Heterobasidion parviporum", "D. Heterobasidion irregulare"], correcta: 3 },
+            { id: 13, descompte: 0.3, text: "13. Una diferencia entre Armillaria y Heterobasidion es que Heterobasidion produce cuerpos de fructificación perennes y los de Armillaria mueren durante el invierno:", opcions: ["A. Falso", "B. Verdadero"], correcta: 1 },
+            { id: 14, descompte: 0.3, text: "14. Los individuos creados por Onnia son de un gran tamaño en comparación con los de Armillaria:", opcions: ["A. Verdadero", "B. Falso"], correcta: 1 },
+            { id: 15, descompte: 0.3, text: "15. Sirex noctilio y Amylostereum causan grandes pérdidas en plantaciones de coníferas exóticas en el hemisferio sur porqué:", opcions: ["A. No existen depredadores y parasitoides de Sirex.", "B. No existen competidores de Amylostereum.", "C. Las condiciones en el hemisferio sur son más favorables a la enfermedad."], correcta: 0 },
+            { id: 16, descompte: 0.3, text: "16. Pythium tienden a ser más especialistas que otros oomicetos como Phytophthora o Peronospora:", opcions: ["A. Verdadero", "B. Falso"], correcta: 1 },
+            { id: 17, descompte: 0.3, text: "17. Los síntomas que nos pueden indicar un ataque de Phytophthora son:", opcions: ["A. Pudrición de duramen", "B. Chancros en la base del tronco con exudaciones de color oscuro", "C. Presencia de oosporas, esporangios y/o zoosporas."], correcta: 1 },
+            { id: 18, descompte: 0.3, text: "18. Es importante para Phytophthora poder generar oosporas para:", opcions: ["A. poder infectar tejidos", "B. poder nadar y encontrar un nuevo huésped", "C. poder sobrevivir en épocas que no hay huésped o las condiciones son desfavorables", "D. poder volar a grandes distancias y poder encontrar un huésped compatible"], correcta: 2 },
+            { id: 19, descompte: 0.2, text: "19. Indica cuales de las siguientes Phytophthora sp. afecta al aliso:", opcions: ["A. Phytophthora x alni", "B. Phytophthora ramorum", "C. Phytophthora cinnamomi", "D. Phytophthora ilicis"], correcta: 0 },
+            { id: 20, descompte: 0.3, text: "20. La definición de P.D. Manion de decaimiento explica el proceso de mortalidad por una secuencia de factores que primero predisponen, luego incitan y finalmente contribuyen a la muerte del árbol:", opcions: ["A. Verdadero", "B. Falso"], correcta: 0 },
+            { id: 21, descompte: 0.3, text: "21. Indica que patógeno causante de enfermedades de chancro es nativo de Catalunya:", opcions: ["A. Diplodia corticola (corcho)", "B. Cryphonectria parasitica (castaño)", "C. Fusarium circinatum (pino)"], correcta: 0 },
+            { id: 22, descompte: 0.3, text: "22. ¿Cuál de los siguientes patógenos causa defoliación?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 1 },
+            { id: 23, descompte: 0.3, text: "23. ¿Cuál de los siguientes patógenos es una roya?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 2 },
+            { id: 24, descompte: 0.3, text: "24. ¿Cuál de los siguientes patógenos se ve favorecido por el granizo?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 0 },
+            { id: 25, descompte: 0.3, text: "25a. ¿Cuál de los siguientes patógenos afecta mucho más al regenerado que a los árboles adultos?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 1 },
+            { id: 252, descompte: 0.3, text: "25b. ¿Cuál de los siguientes patógenos tiene un estado latente y depende del estrés del hospedante para causar enfermedad?:", opcions: ["A. Diplodia sapinea", "B. Dothistroma septosporum", "C. Cronartium pini"], correcta: 0 },
+            { id: 26, descompte: 0.3, text: "26. Dentro de un ciclo de una roya las únicas esporas haploides (n) son las basidiosporas. Todas las demás son diplodes (n+n):", opcions: ["A. Verdadero", "B. Falso"], correcta: 1 }, // Falso (las espermátidas/espermacios también son n)
+            { id: 27, descompte: 0.3, text: "27. Las royas tienen esporas que les sirven para alternar entre distintos huéspedes, pero solo algunas de ellas tienen esporas para causar re-infecciones dentro de un mismo huésped (royas autoicas):", opcions: ["A. Falso", "B. Verdadero"], correcta: 0 }, // Falso (la definición dada confunde macrocíclicas/autoicas)
+            { id: 28, descompte: 0.3, text: "28. Los patógenos vasculares de los géneros Ophiostoma o Ceratocystis se dispersan por:", opcions: ["A. Insectos", "B. Contactos entre raíces", "C. Insectos y contactos entre raíces"], correcta: 2 },
+            { id: 29, descompte: 0.3, text: "29. En los estadios iniciales, el marchitamiento causado por Ophiostoma novo-ulmi en los olmos afecta a:", opcions: ["A. Raíces", "B. De manera difusa a toda la copa", "C. Ramas dispersas dentro de la copa", "D. Los conidios del patógeno"], correcta: 2 },
+            { id: 30, descompte: 0.3, text: "30. La distribución de Viscum album en Catalunya en pinares está parcialmente asociada a las zonas de olivares porqué:", opcions: ["A. Se dan mejores condiciones para la supervivencia del patógeno al invierno.", "B. Se dan mejores condiciones para la alimentación del pájaro vector durante el invierno.", "C. Se dan mejores condiciones para que el muérdago alterne entre el pino y el olivo."], correcta: 1 }
+        ];
+
+        let puntuacioTotal = 0;
+        const respostesUsuari = {};
+
+        function generarExamen() {
+            const contenidor = document.getElementById('contenidor-preguntes');
+            preguntes.forEach((p, indexPregunta) => {
+                const divPregunta = document.createElement('div');
+                divPregunta.className = 'pregunta';
+                
+                const titol = document.createElement('div');
+                titol.className = 'titol-pregunta';
+                titol.innerText = p.text;
+                divPregunta.appendChild(titol);
+                
+                const llistaOpcions = document.createElement('ul');
+                llistaOpcions.className = 'opciones';
+                
+                p.opcions.forEach((opcio, indexOpcio) => {
+                    const liOpcio = document.createElement('li');
+                    liOpcio.className = 'opcion';
+                    liOpcio.innerText = opcio;
+                    
+                    liOpcio.onclick = function() {
+                        marcarResposta(indexPregunta, indexOpcio, llistaOpcions, p);
+                    };
+                    
+                    llistaOpcions.appendChild(liOpcio);
+                });
+                
+                divPregunta.appendChild(llistaOpcions);
+                contenidor.appendChild(divPregunta);
+            });
+        }
+
+        function marcarResposta(indexPregunta, indexOpcio, llistaOpcions, preguntaObj) {
+            // Si la pregunta ja s'ha respost, no fer res
+            if (respostesUsuari[indexPregunta] !== undefined) return;
+            
+            respostesUsuari[indexPregunta] = indexOpcio;
+            const elementsOpcions = llistaOpcions.getElementsByClassName('opcion');
+            
+            // Desactivar interacció posterior en aquesta pregunta
+            for (let i = 0; i < elementsOpcions.length; i++) {
+                elementsOpcions[i].classList.add('desactivada');
+                if (i === preguntaObj.correcta) {
+                    elementsOpcions[i].classList.add('correcta'); // Mostra la correcta sempre
+                }
+            }
+            
+            // Si s'ha fallat, es marca en vermell la de l'usuari
+            if (indexOpcio !== preguntaObj.correcta) {
+                elementsOpcions[indexOpcio].classList.add('incorrecta');
+                puntuacioTotal -= preguntaObj.descompte;
+            } else {
+                puntuacioTotal += 1.0;
+            }
+            
+            // Actualitzar el marcador flotant en pantalla
+            document.getElementById('nota-final').innerText = Math.max(0, puntuacioTotal).toFixed(2);
+        }
+
+        // Inicialitza el test en carregar la pàgina
+        window.onload = generarExamen;
+    </script>
+</body>
+</html>
